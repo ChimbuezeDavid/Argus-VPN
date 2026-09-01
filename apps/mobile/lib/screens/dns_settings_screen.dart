@@ -113,181 +113,187 @@ class _DnsSettingsScreenState extends State<DnsSettingsScreen> {
             const SizedBox(height: 20),
 
             // DNS Preset Options
-            ...DnsOption.presetOptions.map((option) {
-              final isSelected = vpn.selectedDnsId == option.id;
-              final isCustom = option.id == 'custom';
+            RadioGroup<String>(
+              groupValue: vpn.selectedDnsId,
+              onChanged: (val) {
+                if (val != null) vpn.selectDnsOption(val);
+              },
+              child: Column(
+                children: [
+                  ...DnsOption.presetOptions.map((option) {
+                    final isSelected = vpn.selectedDnsId == option.id;
+                    final isCustom = option.id == 'custom';
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: cardBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected ? AppColors.primaryEmerald : cardBorder,
-                    width: isSelected ? 1.5 : 1.0,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () {
-                        vpn.selectDnsOption(option.id);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Radio<String>(
-                              value: option.id,
-                              groupValue: vpn.selectedDnsId,
-                              activeColor: AppColors.primaryEmerald,
-                              onChanged: (val) {
-                                if (val != null) vpn.selectDnsOption(val);
-                              },
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.primaryEmerald : cardBorder,
+                          width: isSelected ? 1.5 : 1.0,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              vpn.selectDnsOption(option.id);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  Radio<String>(
+                                    value: option.id,
+                                    activeColor: AppColors.primaryEmerald,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              option.name,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14,
+                                                color: textPrimary,
+                                              ),
+                                            ),
+                                            if (isSelected) ...[
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primaryEmerald.withValues(alpha: 0.2),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  'ACTIVE',
+                                                  style: TextStyle(
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: AppColors.primaryEmerald,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          option.description,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: textSecondary,
+                                          ),
+                                        ),
+                                        if (option.servers.isNotEmpty) ...[
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Servers: ${option.servers.join(', ')}',
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              fontFamily: 'monospace',
+                                              color: AppColors.primaryCyan,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
+                          ),
+
+                          // If Custom is selected, show Input Fields
+                          if (isCustom && isSelected) ...[
+                            Divider(height: 1, color: cardBorder),
+                            Padding(
+                              padding: const EdgeInsets.all(16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        option.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14,
-                                          color: textPrimary,
-                                        ),
-                                      ),
-                                      if (isSelected) ...[
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.primaryEmerald.withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          child: const Text(
-                                            'ACTIVE',
-                                            style: TextStyle(
-                                              fontSize: 9,
-                                              fontWeight: FontWeight.w800,
-                                              color: AppColors.primaryEmerald,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
                                   Text(
-                                    option.description,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: textSecondary,
-                                    ),
+                                    'PRIMARY DNS SERVER (IPV4)',
+                                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: textSecondary),
                                   ),
-                                  if (option.servers.isNotEmpty) ...[
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Servers: ${option.servers.join(', ')}',
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        fontFamily: 'monospace',
-                                        color: AppColors.primaryCyan,
-                                        fontWeight: FontWeight.w700,
+                                  const SizedBox(height: 6),
+                                  TextField(
+                                    controller: _primaryController,
+                                    style: TextStyle(color: textPrimary, fontSize: 13),
+                                    decoration: InputDecoration(
+                                      hintText: 'e.g. 1.1.1.1',
+                                      hintStyle: TextStyle(color: textMuted),
+                                      filled: true,
+                                      fillColor: inputBg,
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(color: cardBorder),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(color: cardBorder),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(color: AppColors.primaryEmerald),
                                       ),
                                     ),
-                                  ],
+                                    onChanged: (val) {
+                                      vpn.setCustomDns(primary: val, secondary: _secondaryController.text);
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'SECONDARY DNS SERVER (OPTIONAL)',
+                                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: textSecondary),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  TextField(
+                                    controller: _secondaryController,
+                                    style: TextStyle(color: textPrimary, fontSize: 13),
+                                    decoration: InputDecoration(
+                                      hintText: 'e.g. 1.0.0.1',
+                                      hintStyle: TextStyle(color: textMuted),
+                                      filled: true,
+                                      fillColor: inputBg,
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(color: cardBorder),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(color: cardBorder),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(color: AppColors.primaryEmerald),
+                                      ),
+                                    ),
+                                    onChanged: (val) {
+                                      vpn.setCustomDns(primary: _primaryController.text, secondary: val);
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
                           ],
-                        ),
+                        ],
                       ),
-                    ),
-
-                    // If Custom is selected, show Input Fields
-                    if (isCustom && isSelected) ...[
-                      Divider(height: 1, color: cardBorder),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'PRIMARY DNS SERVER (IPV4)',
-                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: textSecondary),
-                            ),
-                            const SizedBox(height: 6),
-                            TextField(
-                              controller: _primaryController,
-                              style: TextStyle(color: textPrimary, fontSize: 13),
-                              decoration: InputDecoration(
-                                hintText: 'e.g. 1.1.1.1',
-                                hintStyle: TextStyle(color: textMuted),
-                                filled: true,
-                                fillColor: inputBg,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: cardBorder),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: cardBorder),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(color: AppColors.primaryEmerald),
-                                ),
-                              ),
-                              onChanged: (val) {
-                                vpn.setCustomDns(primary: val, secondary: _secondaryController.text);
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'SECONDARY DNS SERVER (OPTIONAL)',
-                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: textSecondary),
-                            ),
-                            const SizedBox(height: 6),
-                            TextField(
-                              controller: _secondaryController,
-                              style: TextStyle(color: textPrimary, fontSize: 13),
-                              decoration: InputDecoration(
-                                hintText: 'e.g. 1.0.0.1',
-                                hintStyle: TextStyle(color: textMuted),
-                                filled: true,
-                                fillColor: inputBg,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: cardBorder),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: cardBorder),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(color: AppColors.primaryEmerald),
-                                ),
-                              ),
-                              onChanged: (val) {
-                                vpn.setCustomDns(primary: _primaryController.text, secondary: val);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            }),
+                    );
+                  }),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -1167,7 +1167,7 @@ class ApiService {
   }) async {
     final body = {
       'clientPublicKey': clientPublicKey,
-      if (preferredServerId != null) 'preferredServerId': preferredServerId,
+      'preferredServerId': ?preferredServerId,
       if (shieldSettings != null) 'shieldSettings': shieldSettings.toJson(),
     };
 

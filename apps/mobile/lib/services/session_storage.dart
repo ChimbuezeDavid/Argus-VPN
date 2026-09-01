@@ -4,7 +4,7 @@ import '../models/user_model.dart';
 import '../models/shield_settings.dart';
 
 /// Persists user session data using SharedPreferences, which is backed by
-/// Android's SharedPreferences (XML in /data/data/<pkg>/shared_prefs/).
+/// Android's SharedPreferences (XML in `/data/data/<pkg>/shared_prefs/`).
 /// This survives app restarts, unlike the old Directory.systemTemp approach
 /// which was cleared on many Android devices between launches.
 class SessionStorage {

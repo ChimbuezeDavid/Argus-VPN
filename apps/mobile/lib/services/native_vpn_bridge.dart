@@ -78,9 +78,9 @@ class NativeVpnBridge {
       final bool? result = await _vpnChannel.invokeMethod<bool>('reloadTunnel', {
         'dnsList': dnsList,
         'disallowedPackages': disallowedPackages,
-        if (serverCity != null) 'serverCity': serverCity,
-        if (serverCountry != null) 'serverCountry': serverCountry,
-        if (serverFlag != null) 'serverFlag': serverFlag,
+        'serverCity': ?serverCity,
+        'serverCountry': ?serverCountry,
+        'serverFlag': ?serverFlag,
         'localLanAccess': localLanAccess,
         'packetMtu': packetMtu,
         'stealthMode': stealthMode,
