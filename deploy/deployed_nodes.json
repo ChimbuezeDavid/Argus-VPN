@@ -1,0 +1,86 @@
+[
+  {
+    "city": "London",
+    "country": "United Kingdom",
+    "countryCode": "GB",
+    "region": "Europe",
+    "flag": "\ud83c\uddec\ud83c\udde7",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "publicIp": "95.179.237.53",
+    "publicKey": "/cBFdtwRHjz56m38Kh0QsgIeVGtlKJD1W3A43UVCnXs=",
+    "port": 51820
+  },
+  {
+    "city": "Tokyo",
+    "country": "Japan",
+    "countryCode": "JP",
+    "region": "Asia",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "lat": 35.6762,
+    "lng": 139.6503,
+    "publicIp": "202.182.99.236",
+    "publicKey": "QBpooU7ib72cJeMEWtrlr29P7ahh6H658xoFM3/XQQQ=",
+    "port": 51820
+  },
+  {
+    "city": "Singapore",
+    "country": "Singapore",
+    "countryCode": "SG",
+    "region": "Asia",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "publicIp": "45.77.40.191",
+    "publicKey": "M/IfG8NKoDBQLEjkX+vFBJZtdMjx89rFn6Wh36vjY3I=",
+    "port": 51820
+  },
+  {
+    "city": "Toronto",
+    "country": "Canada",
+    "countryCode": "CA",
+    "region": "Americas",
+    "flag": "\ud83c\udde8\ud83c\udde6",
+    "lat": 43.6532,
+    "lng": -79.3832,
+    "publicIp": "155.138.146.27",
+    "publicKey": "s75vnbjZOqSY7aA++nQ/ChGQQP0m/WF33ZyueBgnWxs=",
+    "port": 51820
+  },
+  {
+    "city": "Paris",
+    "country": "France",
+    "countryCode": "FR",
+    "region": "Europe",
+    "flag": "\ud83c\uddeb\ud83c\uddf7",
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "publicIp": "95.179.209.115",
+    "publicKey": "f1KCU2i2AKZuXvqfnNg7S0nHqQALuLIsXBvkRB1eRWs=",
+    "port": 51820
+  },
+  {
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "countryCode": "NL",
+    "region": "Europe",
+    "flag": "\ud83c\uddf3\ud83c\uddf1",
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "publicIp": "95.179.187.203",
+    "publicKey": "cISZpVm+EGkMRbAyGyHqyhO57rMA/St/Zt6R3iGvE3Q=",
+    "port": 51820
+  },
+  {
+    "city": "Sydney",
+    "country": "Australia",
+    "countryCode": "AU",
+    "region": "Asia",
+    "flag": "\ud83c\udde6\ud83c\uddfa",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "publicIp": "45.76.125.99",
+    "publicKey": "s0rt6OSOf4FcEjMGsKwryT7Bu7OcQCG0+rAWBP5NC2Y=",
+    "port": 51820
+  }
+]

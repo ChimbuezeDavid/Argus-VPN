@@ -19,6 +19,10 @@ import time
 import urllib.request
 import urllib.error
 
+# Ensure UTF-8 output on Windows terminal
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
+
 VULTR_API_BASE = "https://api.vultr.com/v2"
 
 # Region Mapping: Friendly Name / Code -> Vultr Region ID + Geo Metadata
@@ -202,7 +206,7 @@ def main():
 
     print("========================================================")
     print("      ARGUS VPN GLOBAL FLEET AUTO-DEPLOYMENT           ")
-    print("========================================================"
+    print("========================================================")
     print(f"[+] Regions to deploy: {len(requested_regions)} locations ({', '.join(requested_regions)})")
     
     os_id = get_ubuntu_os_id(args.api_key)
