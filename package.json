@@ -1,0 +1,30 @@
+{
+  "name": "argus-vpn",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Argus VPN - Next-Gen Modular WireGuard VPN Ecosystem",
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "start:services": "node start-services.js",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.12.7",
+    "rimraf": "^5.0.5"
+  },
+  "keywords": [
+    "vpn",
+    "wireguard",
+    "privacy",
+    "security"
+  ],
+  "author": "Argus VPN Team",
+  "license": "MIT"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@argus/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript data contracts, interfaces, and DTOs for Argus VPN",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "tsc -b -w",
+    "clean": "rimraf dist tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

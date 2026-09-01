@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  argus-node-1:
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile.node
+    container_name: argus-node-frankfurt
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    environment:
+      - NODE_ID=node-de-frankfurt-1
+      - PORT=4001
+      - DAEMON_SECRET_TOKEN=argus_node_secret_key_123
+      - WG_INTERFACE=wg0
+      - WG_PORT=51820
+      - WG_SERVER_IP=10.8.0.1
+      - WG_SUBNET=10.8.0.0/24
+    ports:
+      - "4001:4001"       # Node Daemon Management API
+      - "51820:51820/udp" # WireGuard VPN Port
+    restart: unless-stopped

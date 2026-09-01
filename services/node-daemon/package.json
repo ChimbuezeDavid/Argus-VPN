@@ -1,0 +1,27 @@
+{
+  "name": "@argus/node-daemon",
+  "version": "1.0.0",
+  "description": "Argus VPN - Exit Node WireGuard Management Daemon",
+  "main": "./dist/server.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "tsc -b -w",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "test": "tsx src/tests/daemon.test.ts",
+    "clean": "rimraf dist tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@argus/shared-types": "*",
+    "fastify": "^4.26.2",
+    "@fastify/cors": "^9.0.1",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  }
+}
