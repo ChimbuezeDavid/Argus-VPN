@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand & Glow Accents (Shared)
+  // Brand & Core Accents
   static const Color primaryEmerald = Color(0xFF10B981);
-  static const Color primaryCyan = Color(0xFF06B6D4);
+  static const Color primaryIndigo = Color(0xFF4F46E5);
+  static const Color primaryCyan = Color(0xFF0EA5E9);
   static const Color accentPurple = Color(0xFF8B5CF6);
   static const Color alertRed = Color(0xFFEF4444);
   static const Color warningOrange = Color(0xFFF59E0B);
@@ -11,19 +12,19 @@ class AppColors {
   // Status colors
   static const Color connected = Color(0xFF10B981);
   static const Color connecting = Color(0xFFF59E0B);
-  static const Color disconnected = Color(0xFF6B7280);
+  static const Color disconnected = Color(0xFF94A3B8);
   static const Color error = Color(0xFFEF4444);
 
-  // Dark Theme Palette
-  static const Color darkBackground = Color(0xFF0B0F17);
-  static const Color darkSurface = Color(0xFF161B26);
-  static const Color darkSurfaceLight = Color(0xFF212936);
-  static const Color darkBorder = Color(0xFF2B3444);
-  static const Color darkTextPrimary = Color(0xFFF0F6FC);
-  static const Color darkTextSecondary = Color(0xFF8B949E);
-  static const Color darkTextMuted = Color(0xFF4B5563);
+  // Dark Theme Palette (Deep Slate Navy - Calm, premium, ergonomic)
+  static const Color darkBackground = Color(0xFF0F172A);
+  static const Color darkSurface = Color(0xFF1E293B);
+  static const Color darkSurfaceLight = Color(0xFF334155);
+  static const Color darkBorder = Color(0xFF334155);
+  static const Color darkTextPrimary = Color(0xFFF8FAFC);
+  static const Color darkTextSecondary = Color(0xFF94A3B8);
+  static const Color darkTextMuted = Color(0xFF64748B);
 
-  // Light Theme Palette
+  // Light Theme Palette (Clean Porcelain Slate - Crisp, legible, warm)
   static const Color lightBackground = Color(0xFFF8FAFC);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightSurfaceLight = Color(0xFFF1F5F9);
@@ -54,7 +55,7 @@ class AppColors {
   static Color textMutedOf(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? darkTextMuted : lightTextMuted;
 
-  // Legacy fallback getters for existing widgets
+  // Legacy fallback getters
   static const Color background = darkBackground;
   static const Color surface = darkSurface;
   static const Color surfaceLight = darkSurfaceLight;
@@ -78,11 +79,12 @@ class AppTheme {
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
         centerTitle: true,
+        scrolledUnderElevation: 0,
         titleTextStyle: TextStyle(
           color: AppColors.darkTextPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.2,
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -90,7 +92,9 @@ class AppTheme {
         selectedItemColor: AppColors.primaryEmerald,
         unselectedItemColor: AppColors.darkTextSecondary,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
+        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primaryEmerald,
@@ -114,11 +118,12 @@ class AppTheme {
         foregroundColor: AppColors.lightTextPrimary,
         elevation: 0,
         centerTitle: true,
+        scrolledUnderElevation: 0,
         titleTextStyle: TextStyle(
           color: AppColors.lightTextPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.2,
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -126,7 +131,9 @@ class AppTheme {
         selectedItemColor: AppColors.primaryEmerald,
         unselectedItemColor: AppColors.lightTextSecondary,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
+        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
       colorScheme: const ColorScheme.light(
         primary: AppColors.primaryEmerald,

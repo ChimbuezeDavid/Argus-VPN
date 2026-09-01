@@ -43,15 +43,17 @@ class _DnsSettingsScreenState extends State<DnsSettingsScreen> {
     final inputBg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
 
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         title: const Text(
-          'CUSTOM DNS SETTINGS',
-          style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+          'DNS Provider',
+          style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           children: [
             // Info Header Card
             Container(
@@ -60,16 +62,23 @@ class _DnsSettingsScreenState extends State<DnsSettingsScreen> {
                 color: cardBg,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: cardBorder),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.02),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryEmerald.withValues(alpha: 0.15),
+                      color: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.dns_rounded, color: AppColors.primaryEmerald, size: 24),
+                    child: const Icon(Icons.dns_rounded, color: AppColors.primaryEmerald, size: 22),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -82,13 +91,14 @@ class _DnsSettingsScreenState extends State<DnsSettingsScreen> {
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: textPrimary,
+                            letterSpacing: -0.1,
                           ),
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 2),
                         Text(
-                          'Choose the upstream DNS provider to resolve domain names and block malicious domains.',
+                          'Choose an upstream provider to resolve domain names securely inside the tunnel.',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 12,
                             color: textSecondary,
                             height: 1.3,
                           ),

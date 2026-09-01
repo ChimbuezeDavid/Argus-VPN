@@ -14,43 +14,59 @@ class SettingsScreen extends StatelessWidget {
     final vpn = context.watch<VpnProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final cardBgLight = isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         title: const Text(
-          'SETTINGS & SECURITY',
-          style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
       ),
       body: SafeArea(
         child: ListView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           children: [
-            // 1. Account / Tier Banner
+            // 1. Account Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                border: Border.all(color: border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor: AppColors.primaryEmerald.withValues(alpha: 0.15),
+                    backgroundColor: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
                     child: const Icon(Icons.person_rounded, color: AppColors.primaryEmerald, size: 24),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          vpn.isAuthenticated ? vpn.currentUser!.email : 'Guest (View Only)',
+                          vpn.isAuthenticated ? vpn.currentUser!.email : 'Guest Mode (View Only)',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                            color: textPrimary,
+                            letterSpacing: -0.1,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -58,13 +74,13 @@ class SettingsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryEmerald.withValues(alpha: 0.2),
+                                color: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                vpn.isAuthenticated ? vpn.currentUser!.tier.toUpperCase() : 'VIEW ONLY',
+                                vpn.isAuthenticated ? vpn.currentUser!.tier.toUpperCase() : 'FREE TIER',
                                 style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
@@ -72,15 +88,13 @@ class SettingsScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                '• 50+ Global Nodes',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                            const SizedBox(width: 8),
+                            Text(
+                              '50+ Global Servers',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: textSecondary,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -89,13 +103,13 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryEmerald,
-                      foregroundColor: Colors.black,
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: vpn.isAuthenticated ? AppColors.alertRed : AppColors.primaryEmerald,
+                      ),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     ),
                     onPressed: () {
                       if (vpn.isAuthenticated) {
@@ -108,35 +122,39 @@ class SettingsScreen extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      vpn.isAuthenticated ? 'Logout' : 'Sign In',
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+                      vpn.isAuthenticated ? 'Sign Out' : 'Sign In',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        color: vpn.isAuthenticated ? AppColors.alertRed : AppColors.primaryEmerald,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
 
-            // 2. Appearance & Theme Section
-            _buildSectionHeader('APPEARANCE & THEME'),
+            // 2. Appearance Section
+            _buildSectionHeader('Appearance', textSecondary),
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                border: Border.all(color: border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Theme Mode',
+                    'Color Theme',
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -144,7 +162,7 @@ class SettingsScreen extends StatelessWidget {
                     children: [
                       _buildThemeOption(
                         context: context,
-                        title: 'Dark Mode',
+                        title: 'Dark',
                         icon: Icons.dark_mode_rounded,
                         mode: ThemeMode.dark,
                         currentMode: vpn.themeMode,
@@ -153,7 +171,7 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       _buildThemeOption(
                         context: context,
-                        title: 'Light Mode',
+                        title: 'Light',
                         icon: Icons.light_mode_rounded,
                         mode: ThemeMode.light,
                         currentMode: vpn.themeMode,
@@ -174,14 +192,15 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
 
-            // 3. Network & Security Section
-            _buildSectionHeader('NETWORK & TUNNEL SUITE'),
+            // 3. Security & Network Suite
+            _buildSectionHeader('Security & Network', textSecondary),
             const SizedBox(height: 10),
+
             _buildSettingTile(
               title: 'Always-On Kill Switch',
-              subtitle: 'Blocks internet traffic automatically if the VPN disconnects unexpectedly.',
+              subtitle: 'Blocks internet traffic automatically if the VPN tunnel drops unexpectedly.',
               icon: Icons.shield_rounded,
               iconColor: AppColors.alertRed,
               trailing: Switch(
@@ -189,7 +208,7 @@ class SettingsScreen extends StatelessWidget {
                 activeThumbColor: AppColors.primaryEmerald,
                 activeTrackColor: AppColors.primaryEmerald.withValues(alpha: 0.3),
                 inactiveThumbColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                inactiveTrackColor: isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight,
+                inactiveTrackColor: cardBgLight,
                 onChanged: (val) => vpn.setKillSwitch(val),
               ),
               isDark: isDark,
@@ -197,8 +216,8 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 10),
 
             _buildSettingTile(
-              title: 'Local LAN Traffic Access',
-              subtitle: 'Allows accessing smart TVs, Chromecast, local printers, and Samba/Plex shares while connected.',
+              title: 'Local Network Sharing',
+              subtitle: 'Keeps printers, smart TVs, Chromecast, and local storage accessible over Wi-Fi.',
               icon: Icons.lan_rounded,
               iconColor: AppColors.primaryCyan,
               trailing: Switch(
@@ -206,7 +225,7 @@ class SettingsScreen extends StatelessWidget {
                 activeThumbColor: AppColors.primaryEmerald,
                 activeTrackColor: AppColors.primaryEmerald.withValues(alpha: 0.3),
                 inactiveThumbColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                inactiveTrackColor: isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight,
+                inactiveTrackColor: cardBgLight,
                 onChanged: (val) => vpn.toggleLocalLanAccess(val),
               ),
               isDark: isDark,
@@ -217,7 +236,7 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => _showMtuTunerDialog(context, vpn, isDark),
               child: _buildSettingTile(
                 title: 'Packet MTU Tuner',
-                subtitle: 'Manual MTU sizing (1280–1500 bytes) to prevent packet fragmentation on cellular networks.',
+                subtitle: 'Fine-tune MTU packet sizing (1280–1500 bytes) to prevent carrier throttling.',
                 icon: Icons.tune_rounded,
                 iconColor: AppColors.primaryEmerald,
                 trailing: Row(
@@ -227,13 +246,13 @@ class SettingsScreen extends StatelessWidget {
                       '${vpn.shieldSettings.packetMtu} B',
                       style: const TextStyle(
                         color: AppColors.primaryEmerald,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                         fontSize: 12,
                         fontFamily: 'monospace',
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                    Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
                   ],
                 ),
                 isDark: isDark,
@@ -245,7 +264,7 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => _showTrustedWifiDialog(context, vpn, isDark),
               child: _buildSettingTile(
                 title: 'Trusted Wi-Fi Networks',
-                subtitle: 'Auto-secure untrusted Wi-Fi hotspots and bypass VPN on verified home/work networks.',
+                subtitle: 'Automatically secures unknown public hotspots while pausing on verified SSIDs.',
                 icon: Icons.wifi_protected_setup_rounded,
                 iconColor: AppColors.warningOrange,
                 trailing: Row(
@@ -255,12 +274,12 @@ class SettingsScreen extends StatelessWidget {
                       '${vpn.shieldSettings.trustedWifiNetworks.length} Trusted',
                       style: const TextStyle(
                         color: AppColors.warningOrange,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                    Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
                   ],
                 ),
                 isDark: isDark,
@@ -272,7 +291,7 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => _showPortForwardingDialog(context, vpn, isDark),
               child: _buildSettingTile(
                 title: 'Ephemeral Port Forwarding',
-                subtitle: 'Lease high-speed temporary ports (49152–65535) for fast P2P and gaming hosting.',
+                subtitle: 'Lease temporary incoming ports (49152–65535) for P2P and gaming hosting.',
                 icon: Icons.swap_vert_rounded,
                 iconColor: AppColors.accentPurple,
                 trailing: Row(
@@ -281,41 +300,17 @@ class SettingsScreen extends StatelessWidget {
                     Text(
                       vpn.activePortForward != null ? 'Port ${vpn.activePortForward}' : 'Disabled',
                       style: TextStyle(
-                        color: vpn.activePortForward != null ? AppColors.accentPurple : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
-                        fontWeight: FontWeight.w800,
+                        color: vpn.activePortForward != null ? AppColors.accentPurple : textSecondary,
+                        fontWeight: FontWeight.w700,
                         fontSize: 12,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                    Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
                   ],
                 ),
                 isDark: isDark,
               ),
-            ),
-            const SizedBox(height: 10),
-
-            _buildSettingTile(
-              title: 'VPN Protocol',
-              subtitle: 'Hardware-tuned WireGuard UDP engine with Curve25519 cryptography.',
-              icon: Icons.hub_rounded,
-              iconColor: AppColors.primaryCyan,
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryEmerald.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'WireGuard',
-                  style: TextStyle(
-                    color: AppColors.primaryEmerald,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              isDark: isDark,
             ),
             const SizedBox(height: 10),
 
@@ -327,10 +322,10 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
               child: _buildSettingTile(
-                title: 'Custom DNS Provider',
-                subtitle: 'Configure private resolvers (Pi-hole, AdGuard Home, Google, NextDNS).',
+                title: 'Private DNS Provider',
+                subtitle: 'Choose custom resolvers (NextDNS, Cloudflare, AdGuard Home, Pi-hole).',
                 icon: Icons.dns_rounded,
-                iconColor: AppColors.accentPurple,
+                iconColor: AppColors.primaryIndigo,
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -338,42 +333,23 @@ class SettingsScreen extends StatelessWidget {
                       vpn.activeDnsServers.first,
                       style: const TextStyle(
                         color: AppColors.primaryCyan,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         fontSize: 12,
                         fontFamily: 'monospace',
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                    Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
                   ],
                 ),
                 isDark: isDark,
               ),
             ),
-            const SizedBox(height: 10),
 
-            _buildSettingTile(
-              title: 'MAC Address & Anti-Tracking',
-              subtitle: 'Layer 2/3 hardware isolation. Hides device physical MAC from local Wi-Fi hotspots and remote networks.',
-              icon: Icons.fingerprint_rounded,
-              iconColor: AppColors.primaryEmerald,
-              trailing: Switch(
-                value: vpn.shieldSettings.macAddressMasking,
-                activeThumbColor: AppColors.primaryEmerald,
-                activeTrackColor: AppColors.primaryEmerald.withValues(alpha: 0.3),
-                inactiveThumbColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                inactiveTrackColor: isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight,
-                onChanged: (val) {
-                  vpn.updateShieldSetting(macAddressMasking: val);
-                },
-              ),
-              isDark: isDark,
-            ),
+            const SizedBox(height: 24),
 
-            const SizedBox(height: 22),
-
-            // 4. Smart Automations Section
-            _buildSectionHeader('SMART AUTOMATIONS'),
+            // 4. App Routing Section
+            _buildSectionHeader('App Routing', textSecondary),
             const SizedBox(height: 10),
 
             GestureDetector(
@@ -384,44 +360,48 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
               child: _buildSettingTile(
-                title: 'Split Tunneling',
+                title: 'Split Tunneling (App Bypass)',
                 subtitle: vpn.bypassedPackages.isEmpty
-                    ? 'All apps routed through VPN'
-                    : '${vpn.bypassedPackages.length} apps bypassing VPN directly to local ISP',
+                    ? 'All application traffic is routed through the VPN tunnel'
+                    : '${vpn.bypassedPackages.length} apps bypassing VPN directly through local ISP',
                 icon: Icons.call_split_rounded,
                 iconColor: AppColors.primaryEmerald,
-                trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                trailing: Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
                 isDark: isDark,
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // 5. Version Info
             Center(
               child: Text(
-                'Argus VPN • v2.0 Enterprise Release (2026.2)',
+                'Argus VPN • Version 2.0.0 (Build 2026.2)',
                 style: TextStyle(
                   fontSize: 12,
                   color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textSecondary,
-        letterSpacing: 1.0,
+  Widget _buildSectionHeader(String title, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: color,
+          letterSpacing: -0.1,
+        ),
       ),
     );
   }
@@ -445,7 +425,7 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primaryEmerald.withValues(alpha: isDark ? 0.2 : 0.15)
+                ? AppColors.primaryEmerald.withValues(alpha: isDark ? 0.2 : 0.12)
                 : (isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -464,8 +444,8 @@ class SettingsScreen extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   color: isSelected ? AppColors.primaryEmerald : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
                 ),
               ),
@@ -484,12 +464,15 @@ class SettingsScreen extends StatelessWidget {
     required Widget trailing,
     required bool isDark,
   }) {
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        border: Border.all(color: border),
       ),
       child: Row(
         children: [
@@ -510,15 +493,16 @@ class SettingsScreen extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                    letterSpacing: -0.1,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                     height: 1.3,
                   ),
@@ -566,14 +550,14 @@ class SettingsScreen extends StatelessWidget {
                   const Icon(Icons.tune_rounded, color: AppColors.primaryEmerald),
                   const SizedBox(width: 10),
                   Text(
-                    'Packet MTU & MSS Tuner',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: textPrimary),
+                    'Packet MTU Tuner',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textPrimary),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
-                'Adjust WireGuard Maximum Transmission Unit to eliminate packet fragmentation and TCP retransmissions.',
+                'Adjust packet size to prevent connection drops and data fragmentation on cellular networks.',
                 style: TextStyle(fontSize: 12, color: textSecondary, height: 1.3),
               ),
               const SizedBox(height: 20),
@@ -581,8 +565,8 @@ class SettingsScreen extends StatelessWidget {
                 child: Text(
                   '$selectedMtu Bytes',
                   style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.primaryEmerald,
                     fontFamily: 'monospace',
                   ),
@@ -631,7 +615,7 @@ class SettingsScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  child: const Text('Apply MTU Setting', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                  child: const Text('Save MTU Size', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
                 ),
               ),
             ],
@@ -649,13 +633,13 @@ class SettingsScreen extends StatelessWidget {
         side: BorderSide(color: isSelected ? AppColors.primaryEmerald : (isDark ? AppColors.darkBorder : AppColors.lightBorder)),
         backgroundColor: isSelected ? AppColors.primaryEmerald.withValues(alpha: 0.15) : null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 11,
-          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           color: isSelected ? AppColors.primaryEmerald : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
         ),
       ),
@@ -701,13 +685,13 @@ class SettingsScreen extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       'Trusted Wi-Fi Networks',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: textPrimary),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textPrimary),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Argus VPN automatically protects you on public Wi-Fi and pauses encryption on trusted SSIDs.',
+                  'Automatically secures unknown public hotspots and pauses VPN on verified home/office Wi-Fi.',
                   style: TextStyle(fontSize: 12, color: textSecondary, height: 1.3),
                 ),
                 const SizedBox(height: 16),
@@ -729,8 +713,8 @@ class SettingsScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'CONNECTED WI-FI',
-                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: textSecondary, letterSpacing: 0.8),
+                              'Connected Network',
+                              style: TextStyle(fontSize: 11, color: textSecondary, fontWeight: FontWeight.w500),
                             ),
                             Text(
                               currentSsid,
@@ -751,13 +735,13 @@ class SettingsScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isCurrentTrusted ? AppColors.alertRed : AppColors.primaryEmerald,
                           foregroundColor: isCurrentTrusted ? Colors.white : Colors.black,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           elevation: 0,
                         ),
                         child: Text(
-                          isCurrentTrusted ? 'Untrust' : 'Trust SSID',
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11),
+                          isCurrentTrusted ? 'Remove' : 'Trust Wi-Fi',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                         ),
                       ),
                     ],
@@ -772,8 +756,8 @@ class SettingsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Auto-Secure Untrusted Wi-Fi', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: textPrimary)),
-                          Text('Connects immediately upon detecting unknown Wi-Fi hotspots', style: TextStyle(fontSize: 11, color: textSecondary)),
+                          Text('Auto-Secure Untrusted Wi-Fi', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: textPrimary)),
+                          Text('Connects automatically on open public networks', style: TextStyle(fontSize: 11, color: textSecondary)),
                         ],
                       ),
                     ),
@@ -791,15 +775,15 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 14),
 
                 Text(
-                  'TRUSTED NETWORKS LIST (${trusted.length})',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: textSecondary, letterSpacing: 0.8),
+                  'Trusted Networks (${trusted.length})',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textSecondary),
                 ),
                 const SizedBox(height: 8),
 
                 if (trusted.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text('No trusted networks added yet.', style: TextStyle(fontSize: 12, color: textSecondary)),
+                    child: Text('No trusted Wi-Fi networks saved yet.', style: TextStyle(fontSize: 12, color: textSecondary)),
                   )
                 else
                   ...trusted.map(
@@ -873,13 +857,13 @@ class SettingsScreen extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       'Ephemeral Port Forwarding',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: textPrimary),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textPrimary),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Dynamically open an ephemeral port on the active WireGuard node for BitTorrent, high-speed P2P, or game hosting.',
+                  'Dynamically lease an ephemeral incoming port on the active server node for high-speed P2P or hosting.',
                   style: TextStyle(fontSize: 12, color: textSecondary, height: 1.3),
                 ),
                 const SizedBox(height: 20),
@@ -891,20 +875,20 @@ class SettingsScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.accentPurple.withValues(alpha: isDark ? 0.15 : 0.08),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.accentPurple.withValues(alpha: 0.4)),
+                      border: Border.all(color: AppColors.accentPurple.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       children: [
                         Text(
-                          'ACTIVE FORWARDED PORT',
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: textSecondary, letterSpacing: 1.0),
+                          'Active Forwarded Port',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textSecondary),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '$activePort',
                           style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 34,
+                            fontWeight: FontWeight.w800,
                             color: AppColors.accentPurple,
                             fontFamily: 'monospace',
                           ),
@@ -912,7 +896,7 @@ class SettingsScreen extends StatelessWidget {
                         if (expiresAt != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                            'Lease expires in 23h 59m',
+                            'Lease valid for 24 hours',
                             style: TextStyle(fontSize: 11, color: textSecondary),
                           ),
                         ],
@@ -947,15 +931,15 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Icon(Icons.lock_open_rounded, size: 32, color: textSecondary),
+                        Icon(Icons.lock_open_rounded, size: 30, color: textSecondary),
                         const SizedBox(height: 8),
                         Text(
                           'No Active Port Leased',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: textPrimary),
+                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textPrimary),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Click below to generate a dynamic 24-hour port lease.',
+                          'Tap below to request a dynamic 24-hour port lease.',
                           style: TextStyle(fontSize: 11, color: textSecondary),
                           textAlign: TextAlign.center,
                         ),
@@ -971,7 +955,7 @@ class SettingsScreen extends StatelessWidget {
                         setModalState(() {});
                       },
                       icon: const Icon(Icons.bolt_rounded, color: Colors.black),
-                      label: const Text('Request 24h Port Lease', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Colors.black)),
+                      label: const Text('Request 24h Port Lease', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.black)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.accentPurple,
                         padding: const EdgeInsets.symmetric(vertical: 14),

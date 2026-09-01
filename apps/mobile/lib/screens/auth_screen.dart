@@ -94,14 +94,16 @@ class _AuthScreenState extends State<AuthScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         title: Text(
-          _isLogin ? 'SIGN IN' : 'CREATE ACCOUNT',
-          style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+          _isLogin ? 'Sign In' : 'Create Account',
+          style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -111,22 +113,22 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryEmerald.withValues(alpha: 0.12),
+                    color: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primaryEmerald.withValues(alpha: 0.3)),
                   ),
-                  child: const Icon(Icons.shield_rounded, color: AppColors.primaryEmerald, size: 44),
+                  child: const Icon(Icons.shield_rounded, color: AppColors.primaryEmerald, size: 40),
                 ),
               ),
               const SizedBox(height: 16),
 
               Center(
                 child: Text(
-                  _isLogin ? 'Welcome Back to Argus' : 'Unlock Complete Protection',
+                  _isLogin ? 'Welcome back' : 'Create your account',
                   style: TextStyle(
                     fontSize: 22,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                    letterSpacing: -0.3,
                   ),
                 ),
               ),
@@ -135,7 +137,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Center(
                 child: Text(
                   _isLogin
-                      ? 'Sign in to connect to 50+ high-speed WireGuard nodes'
+                      ? 'Sign in to access 50+ high-speed WireGuard nodes'
                       : 'Sign up to activate DNS Shield & WireGuard encryption',
                   style: TextStyle(
                     fontSize: 13,

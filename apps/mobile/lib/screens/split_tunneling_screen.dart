@@ -53,10 +53,11 @@ class _SplitTunnelingScreenState extends State<SplitTunnelingScreen> {
     }).toList();
 
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         title: const Text(
-          'SPLIT TUNNELING',
-          style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+          'Split Tunneling',
+          style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
         actions: [
           if (bypassedCount > 0)
@@ -67,9 +68,9 @@ class _SplitTunnelingScreenState extends State<SplitTunnelingScreen> {
                   builder: (ctx) => AlertDialog(
                     backgroundColor: cardBg,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    title: Text('Reset Split Tunneling?', style: TextStyle(color: textPrimary, fontWeight: FontWeight.w800)),
+                    title: Text('Reset Split Tunneling?', style: TextStyle(color: textPrimary, fontWeight: FontWeight.w700)),
                     content: Text(
-                      'All apps will route through the VPN again.',
+                      'All apps will route through the encrypted VPN tunnel again.',
                       style: TextStyle(color: textSecondary),
                     ),
                     actions: [
@@ -98,30 +99,30 @@ class _SplitTunnelingScreenState extends State<SplitTunnelingScreen> {
           children: [
             // Info Header Card
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.primaryCyan.withValues(alpha: isDark ? 0.15 : 0.10),
-                      AppColors.primaryEmerald.withValues(alpha: isDark ? 0.08 : 0.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: cardBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primaryCyan.withValues(alpha: 0.3)),
+                  border: Border.all(color: cardBorder),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.02),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryCyan.withValues(alpha: 0.2),
+                        color: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.alt_route_rounded, color: AppColors.primaryCyan, size: 24),
+                      child: const Icon(Icons.alt_route_rounded, color: AppColors.primaryEmerald, size: 22),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -131,11 +132,12 @@ class _SplitTunnelingScreenState extends State<SplitTunnelingScreen> {
                           Row(
                             children: [
                               Text(
-                                'App Bypass Control',
+                                'App Routing Control',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: textPrimary,
+                                  letterSpacing: -0.1,
                                 ),
                               ),
                               const Spacer(),

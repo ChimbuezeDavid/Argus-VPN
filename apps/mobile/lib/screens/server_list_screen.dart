@@ -13,6 +13,7 @@ class ServerListScreen extends StatefulWidget {
 }
 
 class _ServerListScreenState extends State<ServerListScreen> {
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedRegion = 'All';
 
@@ -27,11 +28,18 @@ class _ServerListScreenState extends State<ServerListScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final vpn = context.watch<VpnProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final cardBgLight = isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight;
     final cardBorder = isDark ? AppColors.darkBorder : AppColors.lightBorder;
     final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
@@ -54,10 +62,11 @@ class _ServerListScreenState extends State<ServerListScreen> {
     }
 
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         title: const Text(
-          'SERVER LOCATIONS',
-          style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+          'Server Locations',
+          style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
         actions: [
           IconButton(
@@ -69,7 +78,7 @@ class _ServerListScreenState extends State<ServerListScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primaryEmerald),
                   )
                 : const Icon(Icons.refresh_rounded),
-            tooltip: 'Refresh Latencies',
+            tooltip: 'Refresh Ping',
           ),
         ],
       ),
@@ -78,16 +87,29 @@ class _ServerListScreenState extends State<ServerListScreen> {
           children: [
             // Search Box
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               child: TextField(
-                style: TextStyle(color: textPrimary),
+                controller: _searchController,
+                style: TextStyle(color: textPrimary, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Search 35+ locations or countries...',
-                  hintStyle: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                  prefixIcon: Icon(Icons.search_rounded, color: textSecondary),
+                  hintText: 'Search country or city...',
+                  hintStyle: TextStyle(
+                    color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    fontSize: 14,
+                  ),
+                  prefixIcon: Icon(Icons.search_rounded, color: textSecondary, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.close_rounded, color: textSecondary, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      : null,
                   filled: true,
                   fillColor: cardBg,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(color: cardBorder),
@@ -98,47 +120,51 @@ class _ServerListScreenState extends State<ServerListScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.primaryEmerald),
+                    borderSide: const BorderSide(color: AppColors.primaryEmerald, width: 1.5),
                   ),
                 ),
                 onChanged: (val) {
-                  setState(() {
-                    _searchQuery = val;
-                  });
+                  setState(() => _searchQuery = val);
                 },
               ),
             ),
 
             // Regional Filter Chips
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 2, 20, 6),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
                 child: Row(
                   children: _regions.map((region) {
                     final isSelected = _selectedRegion == region;
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        selected: isSelected,
-                        label: Text(region),
-                        labelStyle: TextStyle(
-                          color: isSelected ? Colors.black : textSecondary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
+                      child: InkWell(
+                        onTap: () => setState(() => _selectedRegion = region),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primaryEmerald
+                                : cardBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected ? AppColors.primaryEmerald : cardBorder,
+                            ),
+                          ),
+                          child: Text(
+                            region,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : textSecondary,
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
-                        backgroundColor: cardBg,
-                        selectedColor: AppColors.primaryEmerald,
-                        checkmarkColor: Colors.black,
-                        side: BorderSide(
-                          color: isSelected ? AppColors.primaryEmerald : cardBorder,
-                        ),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        onSelected: (_) {
-                          setState(() {
-                            _selectedRegion = region;
-                          });
-                        },
                       ),
                     );
                   }).toList(),
@@ -146,11 +172,12 @@ class _ServerListScreenState extends State<ServerListScreen> {
               ),
             ),
 
-            // Windscribe-Style Country Accordions List
+            // Country Accordions List
             Expanded(
               child: vpn.isLoadingServers
                   ? const Center(child: CircularProgressIndicator(color: AppColors.primaryEmerald))
                   : ListView.builder(
+                      physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                       itemCount: groupedByCountry.keys.length,
                       itemBuilder: (context, index) {
@@ -181,39 +208,57 @@ class _ServerListScreenState extends State<ServerListScreen> {
                             color: cardBg,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isAnyNodeSelected ? AppColors.primaryEmerald : cardBorder,
+                              color: isAnyNodeSelected
+                                  ? AppColors.primaryEmerald.withValues(alpha: 0.4)
+                                  : cardBorder,
                               width: isAnyNodeSelected ? 1.5 : 1.0,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.02),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Theme(
                             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                             child: ExpansionTile(
                               initiallyExpanded: isAnyNodeSelected || _searchQuery.isNotEmpty,
                               tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                              leading: Text(flag, style: const TextStyle(fontSize: 26)),
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: cardBgLight,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(flag, style: const TextStyle(fontSize: 22)),
+                                ),
+                              ),
                               title: Text(
                                 country,
                                 style: TextStyle(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w700,
                                   color: textPrimary,
+                                  letterSpacing: -0.2,
                                 ),
                               ),
                               subtitle: Row(
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: isDark ? AppColors.darkSurfaceLight : AppColors.lightSurfaceLight,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      '${countryServers.length} ${countryServers.length == 1 ? "Location" : "Locations"}',
-                                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: textSecondary),
-                                    ),
+                                  Text(
+                                    '${countryServers.length} ${countryServers.length == 1 ? "location" : "locations"}',
+                                    style: TextStyle(fontSize: 12, color: textSecondary, fontWeight: FontWeight.w500),
                                   ),
                                   const SizedBox(width: 8),
-                                  Icon(Icons.bolt_rounded, size: 13, color: pingColor),
+                                  Container(
+                                    width: 5,
+                                    height: 5,
+                                    decoration: BoxDecoration(shape: BoxShape.circle, color: pingColor),
+                                  ),
+                                  const SizedBox(width: 5),
                                   Text(
                                     '$bestPing ms',
                                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: pingColor),
@@ -238,7 +283,7 @@ class _ServerListScreenState extends State<ServerListScreen> {
                                       top: BorderSide(color: cardBorder.withValues(alpha: 0.5)),
                                     ),
                                     color: isSelected
-                                        ? AppColors.primaryEmerald.withValues(alpha: isDark ? 0.15 : 0.08)
+                                        ? AppColors.primaryEmerald.withValues(alpha: isDark ? 0.12 : 0.06)
                                         : Colors.transparent,
                                   ),
                                   child: ListTile(
@@ -247,34 +292,38 @@ class _ServerListScreenState extends State<ServerListScreen> {
                                       server.location.city,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                                         color: isSelected ? AppColors.primaryEmerald : textPrimary,
                                       ),
                                     ),
                                     subtitle: Row(
                                       children: [
-                                        Icon(Icons.signal_cellular_alt_rounded, size: 13, color: serverPingColor),
-                                        const SizedBox(width: 4),
+                                        Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: BoxDecoration(shape: BoxShape.circle, color: serverPingColor),
+                                        ),
+                                        const SizedBox(width: 5),
                                         Text(
                                           '${server.pingMs} ms',
                                           style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: serverPingColor),
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
-                                          'Load ${server.currentLoadPercentage}%',
-                                          style: TextStyle(fontSize: 10, color: textSecondary),
+                                          '${server.currentLoadPercentage}% load',
+                                          style: TextStyle(fontSize: 11, color: textSecondary),
                                         ),
                                         const SizedBox(width: 8),
                                         if (server.tierRequired == 'PRO')
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                                             decoration: BoxDecoration(
-                                              color: AppColors.accentPurple.withValues(alpha: 0.2),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color: AppColors.primaryIndigo.withValues(alpha: 0.15),
+                                              borderRadius: BorderRadius.circular(6),
                                             ),
                                             child: const Text(
                                               'PRO',
-                                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.accentPurple),
+                                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.primaryIndigo),
                                             ),
                                           ),
                                       ],
