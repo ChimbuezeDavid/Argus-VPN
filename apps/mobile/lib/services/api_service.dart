@@ -690,7 +690,7 @@ class ApiService {
         pingMs: 59,
       ),
 
-      // 🇰🇷 South Korea (1 Location)
+      // 🇰🇷 South Korea (1 Location) - Live Vultr Seoul Node
       const ServerNode(
         id: 'node-kr-seoul-1',
         hostname: 'kr-sel-1.argusvpn.com',
@@ -702,9 +702,9 @@ class ApiService {
           latitude: 37.5665,
           longitude: 126.9780,
         ),
-        publicIp: '158.180.31.224',
+        publicIp: '158.247.237.34',
         wireguardPort: 51820,
-        publicKey: 'lrKW+2hSOCZ8XlQoTRJwQ5I73wORkVodEgdsTKQwuAQ=',
+        publicKey: '6OnTu1E3f8LCw3UQwEAammb0PbDeF9bb2FqFFPaI3zA=',
         currentLoadPercentage: 22,
         tierRequired: 'PRO',
         pingMs: 182,
@@ -806,7 +806,7 @@ class ApiService {
         pingMs: 128,
       ),
 
-      // 🇮🇳 India (2 Locations)
+      // 🇮🇳 India (2 Locations) - Live Vultr Mumbai Node
       const ServerNode(
         id: 'node-in-mumbai-1',
         hostname: 'in-bom-1.argusvpn.com',
@@ -818,9 +818,9 @@ class ApiService {
           latitude: 19.0760,
           longitude: 72.8777,
         ),
-        publicIp: '158.180.31.224',
+        publicIp: '65.20.69.107',
         wireguardPort: 51820,
-        publicKey: 'lrKW+2hSOCZ8XlQoTRJwQ5I73wORkVodEgdsTKQwuAQ=',
+        publicKey: 'oDunRwA6oR8SboucdrvsUOqw+yd3Rf7Zn2ae2gtW5nE=',
         currentLoadPercentage: 26,
         tierRequired: 'FREE',
         pingMs: 132,
@@ -836,9 +836,9 @@ class ApiService {
           latitude: 28.7041,
           longitude: 77.1025,
         ),
-        publicIp: '158.180.31.224',
+        publicIp: '65.20.69.107',
         wireguardPort: 51820,
-        publicKey: 'lrKW+2hSOCZ8XlQoTRJwQ5I73wORkVodEgdsTKQwuAQ=',
+        publicKey: 'oDunRwA6oR8SboucdrvsUOqw+yd3Rf7Zn2ae2gtW5nE=',
         currentLoadPercentage: 22,
         tierRequired: 'PRO',
         pingMs: 136,

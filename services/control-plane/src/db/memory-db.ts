@@ -212,7 +212,48 @@ export class MemoryDatabase {
         currentLoadPercentage: 13,
         activePeersCount: 0,
         maxCapacity: 500,
+      {
+        id: 'node-kr-seoul-1',
+        hostname: 'kr-sel-1.argusvpn.com',
+        location: {
+          city: 'Seoul',
+          country: 'South Korea',
+          countryCode: 'KR',
+          latitude: 37.5665,
+          longitude: 126.9780
+        },
+        publicIp: '158.247.237.34',
+        wireguardPort: 51820,
+        publicKey: '6OnTu1E3f8LCw3UQwEAammb0PbDeF9bb2FqFFPaI3zA=',
+        allowedIps: ['0.0.0.0/0', '::/0'],
+        dnsServers: ['1.1.1.1', '1.0.0.1'],
+        status: ServerStatus.ONLINE,
+        currentLoadPercentage: 22,
+        activePeersCount: 0,
+        maxCapacity: 500,
         tierRequired: 'PRO',
+        lastHeartbeat: new Date()
+      },
+      {
+        id: 'node-in-mumbai-1',
+        hostname: 'in-bom-1.argusvpn.com',
+        location: {
+          city: 'Mumbai',
+          country: 'India',
+          countryCode: 'IN',
+          latitude: 19.0760,
+          longitude: 72.8777
+        },
+        publicIp: '65.20.69.107',
+        wireguardPort: 51820,
+        publicKey: 'oDunRwA6oR8SboucdrvsUOqw+yd3Rf7Zn2ae2gtW5nE=',
+        allowedIps: ['0.0.0.0/0', '::/0'],
+        dnsServers: ['1.1.1.1', '1.0.0.1'],
+        status: ServerStatus.ONLINE,
+        currentLoadPercentage: 26,
+        activePeersCount: 0,
+        maxCapacity: 500,
+        tierRequired: 'FREE',
         lastHeartbeat: new Date()
       }
     ];

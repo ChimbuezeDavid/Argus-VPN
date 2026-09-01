@@ -82,6 +82,16 @@ REGIONS_CATALOG = {
         "id": "mia", "city": "Miami", "country": "United States", "countryCode": "US",
         "regionGroup": "Americas", "flag": "🇺🇸", "lat": 25.7617, "lng": -80.1918
     },
+    # 🇺🇸 US South-Central (Dallas)
+    "dallas": {
+        "id": "dfw", "city": "Dallas", "country": "United States", "countryCode": "US",
+        "regionGroup": "Americas", "flag": "🇺🇸", "lat": 32.7767, "lng": -96.7970
+    },
+    # 🇺🇸 US East (New York / NJ)
+    "newyork": {
+        "id": "ewr", "city": "New York", "country": "United States", "countryCode": "US",
+        "regionGroup": "Americas", "flag": "🇺🇸", "lat": 40.7128, "lng": -74.0060
+    },
     # 🇰🇷 South Korea
     "seoul": {
         "id": "icn", "city": "Seoul", "country": "South Korea", "countryCode": "KR",
@@ -101,6 +111,31 @@ REGIONS_CATALOG = {
     "johannesburg": {
         "id": "jnb", "city": "Johannesburg", "country": "South Africa", "countryCode": "ZA",
         "regionGroup": "Africa", "flag": "🇿🇦", "lat": -26.2041, "lng": 28.0473
+    },
+    # 🇪🇸 Spain
+    "madrid": {
+        "id": "mad", "city": "Madrid", "country": "Spain", "countryCode": "ES",
+        "regionGroup": "Europe", "flag": "🇪🇸", "lat": 40.4168, "lng": -3.7038
+    },
+    # 🇸🇪 Sweden
+    "stockholm": {
+        "id": "arn", "city": "Stockholm", "country": "Sweden", "countryCode": "SE",
+        "regionGroup": "Europe", "flag": "🇸🇪", "lat": 59.3293, "lng": 18.0686
+    },
+    # 🇵🇱 Poland
+    "warsaw": {
+        "id": "waw", "city": "Warsaw", "country": "Poland", "countryCode": "PL",
+        "regionGroup": "Europe", "flag": "🇵🇱", "lat": 52.2297, "lng": 21.0122
+    },
+    # 🇲🇽 Mexico
+    "mexicocity": {
+        "id": "mex", "city": "Mexico City", "country": "Mexico", "countryCode": "MX",
+        "regionGroup": "Americas", "flag": "🇲🇽", "lat": 19.4326, "lng": -99.1332
+    },
+    # 🇮🇱 Israel
+    "telaviv": {
+        "id": "tlv", "city": "Tel Aviv", "country": "Israel", "countryCode": "IL",
+        "regionGroup": "Middle East", "flag": "🇮🇱", "lat": 32.0853, "lng": 34.7818
     }
 }
 
@@ -142,12 +177,13 @@ def deploy_node(api_key, region_key, os_id):
     meta = REGIONS_CATALOG[region_key]
     user_data_b64 = base64.b64encode(CLOUD_INIT_SCRIPT.encode("utf-8")).decode("utf-8")
 
+    slug = region_key.lower().replace(" ", "").replace("_", "-")
     payload = {
         "region": meta["id"],
         "plan": "vc2-1c-1gb", # Standard $5/mo plan
         "os_id": os_id,
         "label": f"argus-node-{meta['id']}",
-        "hostname": f"{meta['countryCode'].lower()}-{meta['city'].lower()}-1.argusvpn.com",
+        "hostname": f"{meta['countryCode'].lower()}-{slug}-1.argusvpn.com",
         "enable_ipv6": False,
         "backups": "disabled",
         "user_data": user_data_b64
