@@ -49,9 +49,9 @@ export class MemoryDatabase {
           latitude: 40.7128,
           longitude: -74.0060
         },
-        publicIp: '158.180.31.224',
+        publicIp: '89.168.86.81',
         wireguardPort: 51820,
-        publicKey: 'lrKW+2hSOCZ8XlQoTRJwQ5I73wORkVodEgdsTKQwuAQ=',
+        publicKey: 'xK50wOWhZwUzbmExxv8bN+tmpr62itAKtgDh7e/z1GU=',
         allowedIps: ['0.0.0.0/0', '::/0'],
         dnsServers: ['1.1.1.1', '1.0.0.1'],
         status: ServerStatus.ONLINE,
