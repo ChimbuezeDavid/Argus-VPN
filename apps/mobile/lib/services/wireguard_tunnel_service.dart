@@ -78,10 +78,29 @@ class WireGuardTunnelService {
         pingMs: 38,
       );
 
+      // Determine virtual IP based on selected country/city to route through correct exit proxy
+      final countryCode = serverNode.location.countryCode.toUpperCase();
+      final cityName = serverNode.location.city.toLowerCase();
+      String clientVirtualIp = '10.8.1.2'; // Default US NY
+
+      if (countryCode == 'US' && cityName.contains('los angeles')) {
+        clientVirtualIp = '10.8.2.2'; // US Los Angeles
+      } else if (countryCode == 'US') {
+        clientVirtualIp = '10.8.1.2'; // US New York (and other US cities)
+      } else if (countryCode == 'GB' || countryCode == 'UK') {
+        clientVirtualIp = '10.8.3.2'; // UK London
+      } else if (countryCode == 'ES') {
+        clientVirtualIp = '10.8.4.2'; // Spain Madrid
+      } else if (countryCode == 'JP') {
+        clientVirtualIp = '10.8.5.2'; // Japan Tokyo
+      } else if (countryCode == 'DE') {
+        clientVirtualIp = '10.8.0.2'; // Germany Frankfurt Direct
+      }
+
       _activeProfile = VpnProfile(
         sessionId: 'session-${DateTime.now().millisecondsSinceEpoch}',
         server: serverNode,
-        assignedVirtualIp: '10.8.0.2',
+        assignedVirtualIp: clientVirtualIp,
         dnsServers: customDnsServers ?? const ['1.1.1.1', '1.0.0.1'],
         serverPublicKey: serverNode.publicKey,
         endpoint: '${serverNode.publicIp}:${serverNode.wireguardPort}',
@@ -102,7 +121,7 @@ class WireGuardTunnelService {
       await NativeVpnBridge.startTunnel(
         serverIp: serverNode.publicIp,
         serverPort: serverNode.wireguardPort,
-        assignedIp: '10.8.0.2',
+        assignedIp: clientVirtualIp,
         dnsList: dnsToUse,
         clientPrivateKey: '',  // Empty = let native side generate real keys
         serverPublicKey: serverNode.publicKey,

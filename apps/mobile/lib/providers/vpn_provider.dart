@@ -605,9 +605,6 @@ class VpnProvider extends ChangeNotifier {
 
   Future<bool> connect({ServerNode? server}) async {
     if (server != null) _selectedServer = server;
-    if (!isAuthenticated) {
-      return false;
-    }
     await _tunnelService.connect(
       server: _selectedServer,
       shieldSettings: _shieldSettings,
