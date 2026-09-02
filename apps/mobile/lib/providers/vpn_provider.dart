@@ -718,9 +718,17 @@ class VpnProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Hot-reloads the active WireGuard tunnel seamlessly with the updated DNS and split tunneling bypass rules
+  Timer? _reloadDebounce;
+
+  /// Hot-reloads the active WireGuard tunnel seamlessly with the updated DNS and split tunneling bypass rules.
+  /// Debounced 800ms to prevent tunnel thrashing when multiple settings change in rapid succession.
   Future<void> _reloadIfActive() async {
-    if (_vpnState == VpnState.connected) {
+    if (_vpnState != VpnState.connected) return;
+
+    // Cancel any pending reload and schedule a fresh one
+    _reloadDebounce?.cancel();
+    _reloadDebounce = Timer(const Duration(milliseconds: 800), () async {
+      if (_vpnState != VpnState.connected) return;
       _isReloadingShield = true;
       notifyListeners();
       try {
@@ -735,7 +743,7 @@ class VpnProvider extends ChangeNotifier {
         _isReloadingShield = false;
         notifyListeners();
       }
-    }
+    });
   }
 
   void _persistCurrentSession() {
@@ -754,6 +762,7 @@ class VpnProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _reloadDebounce?.cancel();
     _stateSub?.cancel();
     _statsSub?.cancel();
     _tunnelService.dispose();

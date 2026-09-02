@@ -296,16 +296,8 @@ class ArgusVpnService : Service() {
                     backend = GoBackend(applicationContext)
                 }
 
-                // 1. Maintain exact same Curve25519 keypair and assigned IP
-                val keyPair = currentActiveKeyPair ?: if (currentClientPrivateKey.isNotEmpty()) {
-                    try {
-                        KeyPair(Key.fromBase64(currentClientPrivateKey))
-                    } catch (_: Exception) {
-                        getOrCreateDeviceKeyPair()
-                    }
-                } else {
-                    getOrCreateDeviceKeyPair()
-                }
+                // Maintain exact same Curve25519 keypair and assigned IP - NO re-registration needed
+                val keyPair = currentActiveKeyPair ?: getOrCreateDeviceKeyPair()
                 currentActiveKeyPair = keyPair
 
                 val cleanIp = currentAssignedIp.split("/")[0]
@@ -314,6 +306,10 @@ class ArgusVpnService : Service() {
                 val ifaceBuilder = Interface.Builder()
                     .addAddress(interfaceAddress)
                     .setKeyPair(keyPair)
+
+                if (currentPacketMtu in 1280..1500) {
+                    try { ifaceBuilder.setMtu(currentPacketMtu) } catch (_: Exception) {}
+                }
 
                 val dnsToApply = if (currentDnsServers.isNotEmpty()) currentDnsServers else listOf("1.1.1.1", "1.0.0.1")
                 for (dns in dnsToApply) {
@@ -331,7 +327,8 @@ class ArgusVpnService : Service() {
 
                 val builtInterface = ifaceBuilder.build()
                 val serverPubKey = Key.fromBase64(currentServerPublicKey)
-                val endpoint = InetEndpoint.parse("$currentServerIp:$currentServerPort")
+                val portToUse = if (isStealthMode) 443 else currentServerPort
+                val endpoint = InetEndpoint.parse("$currentServerIp:$portToUse")
 
                 val peerBuilder = Peer.Builder()
                     .setPublicKey(serverPubKey)
@@ -345,7 +342,8 @@ class ArgusVpnService : Service() {
                     .addPeer(peerBuilder.build())
                     .build()
 
-                // 2. In-place configuration update (GoBackend reconfigures TUN interface seamlessly)
+                // In-place configuration update — GoBackend reconfigures TUN without disconnecting
+                // Do NOT call setState(DOWN) first; setState(UP, newConfig) handles reconfiguration atomically
                 backend?.setState(tunnel, Tunnel.State.UP, config)
                 isRunning.set(true)
                 Log.i(TAG, "✓ WireGuard tunnel reloaded in-place successfully with new DNS: $currentDnsServers")

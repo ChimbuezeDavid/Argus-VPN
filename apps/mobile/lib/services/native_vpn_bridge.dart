@@ -75,16 +75,18 @@ class NativeVpnBridge {
     bool stealthMode = false,
   }) async {
     try {
-      final bool? result = await _vpnChannel.invokeMethod<bool>('reloadTunnel', {
+      final args = <String, dynamic>{
         'dnsList': dnsList,
         'disallowedPackages': disallowedPackages,
-        'serverCity': ?serverCity,
-        'serverCountry': ?serverCountry,
-        'serverFlag': ?serverFlag,
         'localLanAccess': localLanAccess,
         'packetMtu': packetMtu,
         'stealthMode': stealthMode,
-      });
+      };
+      if (serverCity != null) args['serverCity'] = serverCity;
+      if (serverCountry != null) args['serverCountry'] = serverCountry;
+      if (serverFlag != null) args['serverFlag'] = serverFlag;
+
+      final bool? result = await _vpnChannel.invokeMethod<bool>('reloadTunnel', args);
       return result ?? true;
     } on PlatformException {
       return false;

@@ -277,72 +277,74 @@ class _ServerListScreenState extends State<ServerListScreen> {
                                   serverPingColor = AppColors.alertRed;
                                 }
 
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      top: BorderSide(color: cardBorder.withValues(alpha: 0.5)),
-                                    ),
-                                    color: isSelected
-                                        ? AppColors.primaryEmerald.withValues(alpha: isDark ? 0.12 : 0.06)
-                                        : Colors.transparent,
-                                  ),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-                                    title: Text(
-                                      server.location.city,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                        color: isSelected ? AppColors.primaryEmerald : textPrimary,
+                                return Material(
+                                  color: isSelected
+                                      ? AppColors.primaryEmerald.withValues(alpha: isDark ? 0.12 : 0.06)
+                                      : Colors.transparent,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(color: cardBorder.withValues(alpha: 0.5)),
                                       ),
                                     ),
-                                    subtitle: Row(
-                                      children: [
-                                        Container(
-                                          width: 6,
-                                          height: 6,
-                                          decoration: BoxDecoration(shape: BoxShape.circle, color: serverPingColor),
+                                    child: ListTile(
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                                      title: Text(
+                                        server.location.city,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                          color: isSelected ? AppColors.primaryEmerald : textPrimary,
                                         ),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          '${server.pingMs} ms',
-                                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: serverPingColor),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          '${server.currentLoadPercentage}% load',
-                                          style: TextStyle(fontSize: 11, color: textSecondary),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        if (server.tierRequired == 'PRO')
+                                      ),
+                                      subtitle: Row(
+                                        children: [
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primaryIndigo.withValues(alpha: 0.15),
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                            child: const Text(
-                                              'PRO',
-                                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.primaryIndigo),
-                                            ),
+                                            width: 6,
+                                            height: 6,
+                                            decoration: BoxDecoration(shape: BoxShape.circle, color: serverPingColor),
                                           ),
-                                      ],
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            '${server.pingMs} ms',
+                                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: serverPingColor),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            '${server.currentLoadPercentage}% load',
+                                            style: TextStyle(fontSize: 11, color: textSecondary),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          if (server.tierRequired == 'PRO')
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primaryIndigo.withValues(alpha: 0.15),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: const Text(
+                                                'PRO',
+                                                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.primaryIndigo),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      trailing: isSelected
+                                          ? const Icon(Icons.check_circle_rounded, color: AppColors.primaryEmerald, size: 22)
+                                          : Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
+                                      onTap: () {
+                                        if (!vpn.isAuthenticated) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (_) => const AuthScreen()),
+                                          );
+                                        } else {
+                                          vpn.selectServer(server);
+                                          vpn.connect(server: server);
+                                          Navigator.pop(context);
+                                        }
+                                      },
                                     ),
-                                    trailing: isSelected
-                                        ? const Icon(Icons.check_circle_rounded, color: AppColors.primaryEmerald, size: 22)
-                                        : Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
-                                    onTap: () {
-                                      if (!vpn.isAuthenticated) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (_) => const AuthScreen()),
-                                        );
-                                      } else {
-                                        vpn.selectServer(server);
-                                        vpn.connect(server: server);
-                                        Navigator.pop(context);
-                                      }
-                                    },
                                   ),
                                 );
                               }).toList(),

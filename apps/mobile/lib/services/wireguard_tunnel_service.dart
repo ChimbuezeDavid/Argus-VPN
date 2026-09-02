@@ -89,8 +89,8 @@ class WireGuardTunnelService {
         clientVirtualIp = '10.8.1.2'; // US New York (and other US cities)
       } else if (countryCode == 'GB' || countryCode == 'UK') {
         clientVirtualIp = '10.8.3.2'; // UK London
-      } else if (countryCode == 'ES') {
-        clientVirtualIp = '10.8.4.2'; // Spain Madrid
+      } else if (countryCode == 'PT' || countryCode == 'ES') {
+        clientVirtualIp = '10.8.4.2'; // Portugal Lisbon (replaces dead Spain proxy)
       } else if (countryCode == 'JP') {
         clientVirtualIp = '10.8.5.2'; // Japan Tokyo
       } else if (countryCode == 'DE') {
