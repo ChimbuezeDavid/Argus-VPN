@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { MemoryDatabase } from '../db/memory-db.js';
+import { IArgusDatabase } from '../db/database.interface.js';
 import { ShieldService } from '../shield/shield.service.js';
 
 const updateShieldSchema = z.object({
@@ -11,14 +11,14 @@ const updateShieldSchema = z.object({
   blockSocialMedia: z.boolean().optional()
 });
 
-export const shieldRoutes = (db: MemoryDatabase, shieldService: ShieldService): FastifyPluginAsync => {
+export const shieldRoutes = (db: IArgusDatabase, shieldService: ShieldService): FastifyPluginAsync => {
   return async (fastify) => {
     // Get user's current Argus Shield content filtering settings
     fastify.get('/api/shield/settings', {
       preHandler: [fastify.authenticate]
     }, async (request, reply) => {
       const userPayload = request.user as { userId: string };
-      const user = db.findUserById(userPayload.userId);
+      const user = await db.findUserById(userPayload.userId);
       if (!user) {
         return reply.status(404).send({ error: 'User not found' });
       }
@@ -45,8 +45,9 @@ export const shieldRoutes = (db: MemoryDatabase, shieldService: ShieldService): 
       }
 
       const userPayload = request.user as { userId: string };
-      const current = db.findUserById(userPayload.userId)?.shieldSettings || shieldService.getDefaultShieldSettings();
-      const updated = db.updateUserShieldSettings(userPayload.userId, {
+      const user = await db.findUserById(userPayload.userId);
+      const current = user?.shieldSettings || shieldService.getDefaultShieldSettings();
+      const updated = await db.updateUserShieldSettings(userPayload.userId, {
         ...current,
         ...parseResult.data
       });

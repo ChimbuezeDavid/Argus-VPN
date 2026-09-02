@@ -1,11 +1,11 @@
-import { MemoryDatabase } from '../db/memory-db.js';
+import { IArgusDatabase } from '../db/database.interface.js';
 import { ServerNode, ServerStatus, NodeHeartbeatDto } from '@argus/shared-types';
 
 export class ServerNodeService {
-  constructor(private db: MemoryDatabase) {}
+  constructor(private db: IArgusDatabase) {}
 
-  public getAvailableServers(userTier: string = 'FREE'): ServerNode[] {
-    const servers = this.db.getAllServers();
+  public async getAvailableServers(userTier: string = 'FREE'): Promise<ServerNode[]> {
+    const servers = await this.db.getAllServers();
     return servers.filter(server => {
       if (server.status === ServerStatus.OFFLINE) return false;
       if (userTier === 'FREE' && server.tierRequired !== 'FREE') return false;
@@ -13,8 +13,8 @@ export class ServerNodeService {
     });
   }
 
-  public selectOptimalServer(preferredServerId?: string, preferredCountryCode?: string, userTier: string = 'FREE'): ServerNode {
-    const availableServers = this.getAvailableServers(userTier);
+  public async selectOptimalServer(preferredServerId?: string, preferredCountryCode?: string, userTier: string = 'FREE'): Promise<ServerNode> {
+    const availableServers = await this.getAvailableServers(userTier);
 
     if (availableServers.length === 0) {
       throw new Error('No VPN servers are currently available');
@@ -43,14 +43,14 @@ export class ServerNodeService {
     return availableServers[0];
   }
 
-  public handleNodeHeartbeat(dto: NodeHeartbeatDto): void {
-    const existing = this.db.getServerById(dto.nodeId);
+  public async handleNodeHeartbeat(dto: NodeHeartbeatDto): Promise<void> {
+    const existing = await this.db.getServerById(dto.nodeId);
     if (existing) {
       existing.lastHeartbeat = new Date();
       existing.currentLoadPercentage = dto.metrics.cpuUsagePercent;
       existing.activePeersCount = dto.metrics.activePeers;
       existing.status = ServerStatus.ONLINE;
-      this.db.upsertServer(existing);
+      await this.db.upsertServer(existing);
     }
   }
 }

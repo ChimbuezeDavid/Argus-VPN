@@ -2,7 +2,9 @@ import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import { config } from './config.js';
+import { IArgusDatabase } from './db/database.interface.js';
 import { MemoryDatabase } from './db/memory-db.js';
+import { MongoDatabase } from './db/mongo-db.js';
 import { ShieldService } from './shield/shield.service.js';
 import { AuthService } from './services/auth.service.js';
 import { ServerNodeService } from './services/server-node.service.js';
@@ -43,8 +45,16 @@ export async function createServer() {
     }
   });
 
-  // Instantiate services
-  const db = new MemoryDatabase();
+  // Instantiate database (MongoDB with automatic MemoryDatabase fallback)
+  let db: IArgusDatabase = new MemoryDatabase();
+  if (config.mongoUri && process.env.NODE_ENV !== 'test') {
+    const mongo = new MongoDatabase();
+    const connected = await mongo.connect(config.mongoUri);
+    if (connected) {
+      db = mongo;
+    }
+  }
+
   const shieldService = new ShieldService();
   const authService = new AuthService(db, shieldService);
   const serverNodeService = new ServerNodeService(db);

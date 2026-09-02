@@ -15,8 +15,8 @@ export const serverRoutes = (serverNodeService: ServerNodeService): FastifyPlugi
         // Unauthenticated can still view FREE server list
       }
 
-      const servers = serverNodeService.getAvailableServers(userTier);
-      const recommended = serverNodeService.selectOptimalServer(undefined, undefined, userTier);
+      const servers = await serverNodeService.getAvailableServers(userTier);
+      const recommended = await serverNodeService.selectOptimalServer(undefined, undefined, userTier);
 
       return reply.send({
         servers,

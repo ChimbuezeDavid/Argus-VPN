@@ -4,6 +4,7 @@ dotenv.config();
 export const config = {
   port: parseInt(process.env.PORT || '4000', 10),
   host: process.env.HOST || '0.0.0.0',
+  mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/argus_vpn',
   jwtSecret: process.env.JWT_SECRET || 'argus_super_secret_jwt_key_987654321',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   daemonSecretToken: process.env.DAEMON_SECRET_TOKEN || 'argus_node_secret_key_123',

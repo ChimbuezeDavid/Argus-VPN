@@ -52,6 +52,44 @@ class SessionStorage {
     }
   }
 
+  static const String _usersKey = 'argus_registered_users';
+
+  Future<void> saveUserCredentials(String email, String password, UserModel user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final usersMap = await getCachedUsers();
+      usersMap[email.toLowerCase()] = {
+        'password': password,
+        'user': user.toJson(),
+      };
+      await prefs.setString(_usersKey, jsonEncode(usersMap));
+    } catch (_) {}
+  }
+
+  Future<Map<String, dynamic>> getCachedUsers() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final content = prefs.getString(_usersKey);
+      if (content == null || content.isEmpty) return {};
+      return jsonDecode(content) as Map<String, dynamic>;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<UserModel?> validateLocalCredentials(String email, String password) async {
+    try {
+      final users = await getCachedUsers();
+      final record = users[email.toLowerCase()] as Map<String, dynamic>?;
+      if (record != null && record['password'] == password) {
+        return UserModel.fromJson(record['user'] as Map<String, dynamic>);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> clearSession() async {
     try {
       final prefs = await SharedPreferences.getInstance();

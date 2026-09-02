@@ -1,18 +1,19 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
-import { MemoryDatabase, UserRecord } from '../db/memory-db.js';
+import { IArgusDatabase } from '../db/database.interface.js';
+import { UserRecord } from '../db/memory-db.js';
 import { UserTier, RegisterRequestDto, LoginRequestDto, AuthResponseDto } from '@argus/shared-types';
 import { ShieldService } from '../shield/shield.service.js';
 
 export class AuthService {
   constructor(
-    private db: MemoryDatabase,
+    private db: IArgusDatabase,
     private shieldService: ShieldService
   ) {}
 
   public async register(fastify: FastifyInstance, dto: RegisterRequestDto): Promise<AuthResponseDto> {
-    const existing = this.db.findUserByEmail(dto.email);
+    const existing = await this.db.findUserByEmail(dto.email);
     if (existing) {
       throw new Error('An account with this email address already exists');
     }
@@ -33,7 +34,7 @@ export class AuthService {
       shieldSettings: this.shieldService.getDefaultShieldSettings()
     };
 
-    this.db.createUser(newUser);
+    await this.db.createUser(newUser);
 
     const token = fastify.jwt.sign({ userId: newUser.id, email: newUser.email, tier: newUser.tier });
     const refreshToken = crypto.randomBytes(32).toString('hex');
@@ -49,7 +50,7 @@ export class AuthService {
   }
 
   public async login(fastify: FastifyInstance, dto: LoginRequestDto): Promise<AuthResponseDto> {
-    const user = this.db.findUserByEmail(dto.email);
+    const user = await this.db.findUserByEmail(dto.email);
     if (!user) {
       throw new Error('Invalid email or password');
     }
@@ -89,7 +90,7 @@ export class AuthService {
       shieldSettings: this.shieldService.getDefaultShieldSettings()
     };
 
-    this.db.createUser(newUser);
+    await this.db.createUser(newUser);
 
     const token = fastify.jwt.sign({ userId: newUser.id, email: newUser.email, tier: newUser.tier });
     const refreshToken = crypto.randomBytes(32).toString('hex');

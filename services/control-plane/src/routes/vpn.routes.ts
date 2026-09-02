@@ -60,13 +60,8 @@ export const vpnRoutes = (vpnService: VpnOrchestratorService): FastifyPluginAsyn
     });
 
     // List all available VPN Servers
-    fastify.get('/api/vpn/servers', async (request, reply) => {
-      const servers = vpnService.getAllServers();
-      return reply.status(200).send({ servers });
-    });
-
-    fastify.get('/api/servers', async (request, reply) => {
-      const servers = vpnService.getAllServers();
+    fastify.get('/api/vpn/servers', async (_request, reply) => {
+      const servers = await vpnService.getAllServers();
       return reply.status(200).send({ servers });
     });
   };

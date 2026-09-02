@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { MemoryDatabase } from '../db/memory-db.js';
+import { IArgusDatabase } from '../db/database.interface.js';
 import { ServerNodeService } from './server-node.service.js';
 import { ShieldService } from '../shield/shield.service.js';
 import { config } from '../config.js';
@@ -9,24 +9,25 @@ import {
   DisconnectVpnRequestDto,
   WireGuardFullConfig,
   VpnSession,
-  ArgusShieldSettings
+  ArgusShieldSettings,
+  ServerNode
 } from '@argus/shared-types';
 
 export class VpnOrchestratorService {
   constructor(
-    private db: MemoryDatabase,
+    private db: IArgusDatabase,
     private serverNodeService: ServerNodeService,
     private shieldService: ShieldService
   ) {}
 
   public async connect(userId: string, dto: ConnectVpnRequestDto): Promise<ConnectVpnResponseDto> {
-    const user = this.db.findUserById(userId);
+    const user = await this.db.findUserById(userId);
     if (!user) {
       throw new Error('User not found');
     }
 
     // 1. Select optimal server node
-    const server = this.serverNodeService.selectOptimalServer(
+    const server = await this.serverNodeService.selectOptimalServer(
       dto.preferredServerId,
       dto.preferredCountryCode,
       user.tier
@@ -50,7 +51,7 @@ export class VpnOrchestratorService {
       connectedAt: new Date(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours session
     };
-    this.db.createSession(session);
+    await this.db.createSession(session);
 
     // 5. Construct full WireGuard client profile
     const wgConfig: WireGuardFullConfig = {
@@ -77,17 +78,17 @@ export class VpnOrchestratorService {
   }
 
   public async disconnect(userId: string, dto: DisconnectVpnRequestDto): Promise<{ success: boolean }> {
-    const session = this.db.getSessionById(dto.sessionId);
+    const session = await this.db.getSessionById(dto.sessionId);
     if (!session || session.userId !== userId) {
       return { success: false };
     }
 
-    const server = this.db.getServerById(session.serverId);
+    const server = await this.db.getServerById(session.serverId);
     if (server) {
       await this.removePeerFromNode(server.publicIp, session.clientPublicKey);
     }
 
-    this.db.removeSession(dto.sessionId);
+    await this.db.removeSession(dto.sessionId);
     return { success: true };
   }
 

@@ -1,13 +1,15 @@
 class ApiConfig {
-  // PC Local Wi-Fi Network Address (Active)
+  // Live Oracle Cloud Control Plane Endpoint (Primary)
+  static const String cloudHostUrl = 'http://158.180.31.224:4000';
+  // PC Local Wi-Fi Network Address
   static const String lanHostUrl = 'http://10.251.69.205:4000';
   // ADB Reverse / Localhost
   static const String localDesktopUrl = 'http://127.0.0.1:4000';
   // Android Emulator default
   static const String emulatorUrl = 'http://10.0.2.2:4000';
 
-  // Active default Base URL (Primary LAN Wi-Fi with auto-fallback)
-  static String defaultBaseUrl = lanHostUrl;
+  // Active default Base URL
+  static String defaultBaseUrl = cloudHostUrl;
 
   // Auth endpoints
   static const String register = '/api/auth/register';

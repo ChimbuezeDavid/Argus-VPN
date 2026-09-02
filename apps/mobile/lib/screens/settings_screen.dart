@@ -51,17 +51,17 @@ class SettingsScreen extends StatelessWidget {
               child: Row(
                 children: [
                   CircleAvatar(
-                    radius: 22,
+                    radius: 20,
                     backgroundColor: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
-                    child: const Icon(Icons.person_rounded, color: AppColors.primaryEmerald, size: 24),
+                    child: const Icon(Icons.person_rounded, color: AppColors.primaryEmerald, size: 22),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          vpn.isAuthenticated ? vpn.currentUser!.email : 'Guest Mode (View Only)',
+                          vpn.isAuthenticated ? (vpn.currentUser?.email ?? 'User') : 'Guest User',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -71,26 +71,32 @@ class SettingsScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 3),
-                        Row(
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
+                                color: (vpn.isAuthenticated && vpn.currentUser?.tier == 'PRO')
+                                    ? AppColors.primaryCyan.withValues(alpha: isDark ? 0.22 : 0.15)
+                                    : AppColors.primaryEmerald.withValues(alpha: isDark ? 0.18 : 0.12),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                vpn.isAuthenticated ? vpn.currentUser!.tier.toUpperCase() : 'FREE TIER',
-                                style: const TextStyle(
+                                vpn.isAuthenticated ? (vpn.currentUser?.tier.toUpperCase() ?? 'FREE') : 'FREE TIER',
+                                style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.primaryEmerald,
+                                  color: (vpn.isAuthenticated && vpn.currentUser?.tier == 'PRO')
+                                      ? AppColors.primaryCyan
+                                      : AppColors.primaryEmerald,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
                             Text(
-                              '50+ Global Servers',
+                              'Active Protection',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: textSecondary,
@@ -109,7 +115,8 @@ class SettingsScreen extends StatelessWidget {
                         color: vpn.isAuthenticated ? AppColors.alertRed : AppColors.primaryEmerald,
                       ),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      minimumSize: const Size(64, 34),
                     ),
                     onPressed: () {
                       if (vpn.isAuthenticated) {

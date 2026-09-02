@@ -1,11 +1,12 @@
 import { User, ServerNode, ServerStatus, VpnSession, ArgusShieldSettings } from '@argus/shared-types';
+import { IArgusDatabase } from './database.interface.js';
 
 export interface UserRecord extends User {
   passwordHash: string;
   shieldSettings: ArgusShieldSettings;
 }
 
-export class MemoryDatabase {
+export class MemoryDatabase implements IArgusDatabase {
   private users: Map<string, UserRecord> = new Map(); // userId -> UserRecord
   private usersByEmail: Map<string, string> = new Map(); // email -> userId
   private serverNodes: Map<string, ServerNode> = new Map(); // serverId -> ServerNode
