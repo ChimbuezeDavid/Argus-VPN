@@ -277,7 +277,7 @@ class ArgusVpnService : Service() {
                 Log.i(TAG, "Config: Interface=$cleanIp/32, Endpoint=$currentServerIp:$currentServerPort, AllowedIPs=0.0.0.0/0, ::/0")
                 backend?.setState(tunnel, Tunnel.State.UP, config)
                 isRunning.set(true)
-                Log.i(TAG, "✓ WireGuard full-tunnel ACTIVE! All traffic -> $currentServerIp (Frankfurt)")
+                Log.i(TAG, "✓ WireGuard full-tunnel ACTIVE! Routing to: $currentServerCity, $currentServerCountry (Gateway: $currentServerIp, IP: $cleanIp)")
 
             } catch (e: Exception) {
                 Log.e(TAG, "✗ Failed to bring WireGuard tunnel UP: ${e.message}", e)

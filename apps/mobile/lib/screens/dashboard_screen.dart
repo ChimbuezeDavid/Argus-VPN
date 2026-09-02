@@ -169,17 +169,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     margin: const EdgeInsets.only(bottom: 20),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: AppColors.warningOrange.withValues(alpha: isDark ? 0.12 : 0.08),
+                      color: AppColors.primaryEmerald.withValues(alpha: isDark ? 0.12 : 0.08),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppColors.warningOrange.withValues(alpha: 0.3)),
+                      border: Border.all(color: AppColors.primaryEmerald.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline_rounded, color: AppColors.warningOrange, size: 18),
+                        const Icon(Icons.shield_rounded, color: AppColors.primaryEmerald, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'View Mode • Tap to sign in and activate protection',
+                            'Guest Protection Active • Tap to create account',
                             style: TextStyle(
                               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                               fontSize: 12,
@@ -187,7 +187,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                             ),
                           ),
                         ),
-                        const Icon(Icons.chevron_right_rounded, color: AppColors.warningOrange, size: 18),
+                        const Icon(Icons.chevron_right_rounded, color: AppColors.primaryEmerald, size: 18),
                       ],
                     ),
                   ),
@@ -225,11 +225,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   onTapUp: (_) {
                     setState(() => _isPressed = false);
                     if (isConnecting) return;
-                    if (!vpn.isAuthenticated) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthScreen()));
-                    } else {
-                      vpn.toggleVpnConnection();
-                    }
+                    vpn.toggleVpnConnection();
                   },
                   onTapCancel: () => setState(() => _isPressed = false),
                   child: AnimatedScale(

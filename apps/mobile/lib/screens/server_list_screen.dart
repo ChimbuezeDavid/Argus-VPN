@@ -205,7 +205,6 @@ class _ServerListScreenState extends State<ServerListScreen> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
-                            color: cardBg,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isAnyNodeSelected
@@ -221,9 +220,13 @@ class _ServerListScreenState extends State<ServerListScreen> {
                               ),
                             ],
                           ),
-                          child: Theme(
-                            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                            child: ExpansionTile(
+                          child: Material(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(16),
+                            clipBehavior: Clip.antiAlias,
+                            child: Theme(
+                              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                              child: ExpansionTile(
                               initiallyExpanded: isAnyNodeSelected || _searchQuery.isNotEmpty,
                               tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                               leading: Container(
@@ -333,16 +336,9 @@ class _ServerListScreenState extends State<ServerListScreen> {
                                           ? const Icon(Icons.check_circle_rounded, color: AppColors.primaryEmerald, size: 22)
                                           : Icon(Icons.chevron_right_rounded, color: textSecondary, size: 20),
                                       onTap: () {
-                                        if (!vpn.isAuthenticated) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (_) => const AuthScreen()),
-                                          );
-                                        } else {
-                                          vpn.selectServer(server);
-                                          vpn.connect(server: server);
-                                          Navigator.pop(context);
-                                        }
+                                        vpn.selectServer(server);
+                                        vpn.connect(server: server);
+                                        Navigator.pop(context);
                                       },
                                     ),
                                   ),
@@ -350,8 +346,9 @@ class _ServerListScreenState extends State<ServerListScreen> {
                               }).toList(),
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      );
+                    },
                     ),
             ),
           ],
