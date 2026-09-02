@@ -368,6 +368,9 @@ class ArgusVpnService : Service() {
 
             val jsonBody = org.json.JSONObject().apply {
                 put("clientPublicKey", clientPublicKey)
+                if (currentAssignedIp.isNotEmpty()) {
+                    put("assignedIp", currentAssignedIp)
+                }
             }
 
             conn.outputStream.use { os ->
