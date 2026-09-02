@@ -3,45 +3,38 @@ set -e
 
 echo "=== Updating Multi-City Routing & Anti-Leak Rules on Oracle Gateway ==="
 
-# 1. INPUT Chain: CRITICAL! Allow redirected traffic to reach Redsocks ports
-sudo iptables -I INPUT 1 -i wg0 -j ACCEPT 2>/dev/null || true
-sudo iptables -I INPUT 1 -p tcp -m multiport --dports 12345:12349 -j ACCEPT 2>/dev/null || true
-
-# 2. Flush and recreate all city NAT chains
-for city in NY LA UK ES JP; do
-    sudo iptables -t nat -N REDSOCKS_${city} 2>/dev/null || true
-    sudo iptables -t nat -F REDSOCKS_${city}
-    sudo iptables -t nat -A REDSOCKS_${city} -d 0.0.0.0/8 -j RETURN
-    sudo iptables -t nat -A REDSOCKS_${city} -d 10.0.0.0/8 -j RETURN
-    sudo iptables -t nat -A REDSOCKS_${city} -d 127.0.0.0/8 -j RETURN
-    sudo iptables -t nat -A REDSOCKS_${city} -d 169.254.0.0/16 -j RETURN
-    sudo iptables -t nat -A REDSOCKS_${city} -d 172.16.0.0/12 -j RETURN
-    sudo iptables -t nat -A REDSOCKS_${city} -d 192.168.0.0/16 -j RETURN
+# 1. Ensure wg0 has IP aliases for subnets 10.8.0.1 through 10.8.9.1
+for i in $(seq 0 9); do
+    sudo ip addr add 10.8.${i}.1/24 dev wg0 2>/dev/null || true
 done
 
-sudo iptables -t nat -A REDSOCKS_NY -p tcp -j REDIRECT --to-ports 12345
-sudo iptables -t nat -A REDSOCKS_LA -p tcp -j REDIRECT --to-ports 12346
-sudo iptables -t nat -A REDSOCKS_UK -p tcp -j REDIRECT --to-ports 12347
-sudo iptables -t nat -A REDSOCKS_ES -p tcp -j REDIRECT --to-ports 12348
-sudo iptables -t nat -A REDSOCKS_JP -p tcp -j REDIRECT --to-ports 12349
+# 2. INPUT Chain: CRITICAL! Allow redirected traffic to reach Redsocks ports
+sudo iptables -I INPUT 1 -i wg0 -j ACCEPT 2>/dev/null || true
+sudo iptables -I INPUT 1 -p tcp -m multiport --dports 12345:12355 -j ACCEPT 2>/dev/null || true
 
-# 3. Clean and populate PREROUTING rules on wg0
+# 3. Recreate NAT chains for all 9 Webshare proxies
+for i in $(seq 1 9); do
+    sudo iptables -t nat -N REDSOCKS_${i} 2>/dev/null || true
+    sudo iptables -t nat -F REDSOCKS_${i}
+    sudo iptables -t nat -A REDSOCKS_${i} -d 0.0.0.0/8 -j RETURN
+    sudo iptables -t nat -A REDSOCKS_${i} -d 10.0.0.0/8 -j RETURN
+    sudo iptables -t nat -A REDSOCKS_${i} -d 127.0.0.0/8 -j RETURN
+    sudo iptables -t nat -A REDSOCKS_${i} -d 169.254.0.0/16 -j RETURN
+    sudo iptables -t nat -A REDSOCKS_${i} -d 172.16.0.0/12 -j RETURN
+    sudo iptables -t nat -A REDSOCKS_${i} -d 192.168.0.0/16 -j RETURN
+    port=$((12344 + i))
+    sudo iptables -t nat -A REDSOCKS_${i} -p tcp -j REDIRECT --to-ports ${port}
+done
+
+# 4. Clean and populate PREROUTING rules on wg0
 sudo iptables -t nat -F PREROUTING
 
-# Subnet 10.8.1.x -> US New York (38.154.185.97)
-sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.1.0/24 -p tcp -j REDSOCKS_NY
-# Subnet 10.8.2.x -> US Los Angeles (198.23.243.226)
-sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.2.0/24 -p tcp -j REDSOCKS_LA
-# Subnet 10.8.3.x -> UK London (31.59.20.176)
-sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.3.0/24 -p tcp -j REDSOCKS_UK
-# Subnet 10.8.4.x -> Portugal Lisbon (84.247.60.125)
-sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.4.0/24 -p tcp -j REDSOCKS_ES
-# Subnet 10.8.5.x -> Japan Tokyo (142.111.67.146)
-sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.5.0/24 -p tcp -j REDSOCKS_JP
-# Default (10.8.0.x) -> US New York fallback
-sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.0.0/24 -p tcp -j REDSOCKS_NY
+# Map subnets 10.8.1.x through 10.8.9.x to REDSOCKS_1 through REDSOCKS_9
+for i in $(seq 1 9); do
+    sudo iptables -t nat -A PREROUTING -i wg0 -s 10.8.${i}.0/24 -p tcp -j REDSOCKS_${i}
+done
 
-# 4. FORWARD CHAIN & ANTI-LEAK:
+# 5. FORWARD CHAIN & ANTI-LEAK:
 # Prevent QUIC (UDP 443/80) from leaking Frankfurt IP
 sudo iptables -F FORWARD
 sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -49,26 +42,24 @@ sudo iptables -A FORWARD -i wg0 -p udp --dport 53 -j ACCEPT
 sudo iptables -A FORWARD -i wg0 -p udp --dport 443 -j REJECT --reject-with icmp-port-unreachable
 sudo iptables -A FORWARD -i wg0 -p udp --dport 80 -j REJECT --reject-with icmp-port-unreachable
 sudo iptables -A FORWARD -i wg0 -p udp -j REJECT --reject-with icmp-port-unreachable
-# Direct Germany traffic (10.8.0.x) is allowed through ens3 if not proxied
+# Direct Germany traffic (10.8.0.x) is allowed through ens3 (Oracle Gateway)
 sudo iptables -A FORWARD -i wg0 -s 10.8.0.0/24 -o ens3 -j ACCEPT
 # Proxy subnets MUST NOT leak directly through ens3:
-sudo iptables -A FORWARD -i wg0 -s 10.8.1.0/24 -o ens3 -j REJECT --reject-with icmp-host-prohibited
-sudo iptables -A FORWARD -i wg0 -s 10.8.2.0/24 -o ens3 -j REJECT --reject-with icmp-host-prohibited
-sudo iptables -A FORWARD -i wg0 -s 10.8.3.0/24 -o ens3 -j REJECT --reject-with icmp-host-prohibited
-sudo iptables -A FORWARD -i wg0 -s 10.8.4.0/24 -o ens3 -j REJECT --reject-with icmp-host-prohibited
-sudo iptables -A FORWARD -i wg0 -s 10.8.5.0/24 -o ens3 -j REJECT --reject-with icmp-host-prohibited
+for i in $(seq 1 9); do
+    sudo iptables -A FORWARD -i wg0 -s 10.8.${i}.0/24 -o ens3 -j REJECT --reject-with icmp-host-prohibited
+done
 sudo iptables -A FORWARD -i ens3 -o wg0 -j ACCEPT
 
-# 5. POSTROUTING Masquerade for outbound traffic
+# 6. POSTROUTING Masquerade for outbound traffic
 sudo iptables -t nat -F POSTROUTING
 sudo iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
 
-# 6. Kernel forwarding & Redsocks
+# 7. Kernel forwarding & Redsocks
 sudo sysctl -w net.ipv4.ip_forward=1 > /dev/null
 sudo sysctl -w net.ipv4.conf.all.route_localnet=1 > /dev/null
 sudo systemctl restart redsocks
 
-# 7. Persist rules
+# 8. Persist rules
 sudo netfilter-persistent save 2>/dev/null || sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null || true
 
 echo "=== Anti-Leak & Proxy Routing Configured Successfully! ==="

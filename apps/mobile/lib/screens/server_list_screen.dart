@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../config/app_theme.dart';
 import '../models/server_model.dart';
 import '../providers/vpn_provider.dart';
-import 'auth_screen.dart';
 
 class ServerListScreen extends StatefulWidget {
   const ServerListScreen({super.key});

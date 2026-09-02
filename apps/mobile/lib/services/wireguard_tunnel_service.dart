@@ -78,23 +78,49 @@ class WireGuardTunnelService {
         pingMs: 38,
       );
 
-      // Determine virtual IP based on selected country/city to route through correct exit proxy
-      final countryCode = serverNode.location.countryCode.toUpperCase();
-      final cityName = serverNode.location.city.toLowerCase();
+      // Determine virtual IP based on selected server node to route through exact exit proxy
+      final id = serverNode.id;
       String clientVirtualIp = '10.8.1.2'; // Default US NY
 
-      if (countryCode == 'US' && cityName.contains('los angeles')) {
-        clientVirtualIp = '10.8.2.2'; // US Los Angeles
-      } else if (countryCode == 'US') {
-        clientVirtualIp = '10.8.1.2'; // US New York (and other US cities)
-      } else if (countryCode == 'GB' || countryCode == 'UK') {
-        clientVirtualIp = '10.8.3.2'; // UK London
-      } else if (countryCode == 'PT' || countryCode == 'ES') {
-        clientVirtualIp = '10.8.4.2'; // Portugal Lisbon (replaces dead Spain proxy)
-      } else if (countryCode == 'JP') {
-        clientVirtualIp = '10.8.5.2'; // Japan Tokyo
-      } else if (countryCode == 'DE') {
-        clientVirtualIp = '10.8.0.2'; // Germany Frankfurt Direct
+      if (id == 'node-us-newyork-1') {
+        clientVirtualIp = '10.8.1.2'; // US New York (Port 12345 -> 38.154.185.97)
+      } else if (id == 'node-us-losangeles-1') {
+        clientVirtualIp = '10.8.2.2'; // US Los Angeles (Port 12346 -> 198.23.243.226)
+      } else if (id == 'node-us-seattle-1') {
+        clientVirtualIp = '10.8.3.2'; // US Seattle (Port 12347 -> 191.96.254.138)
+      } else if (id == 'node-uk-london-1') {
+        clientVirtualIp = '10.8.4.2'; // UK London Central (Port 12348 -> 31.59.20.176)
+      } else if (id == 'node-uk-london-2') {
+        clientVirtualIp = '10.8.5.2'; // UK London Metro (Port 12349 -> 45.38.107.97)
+      } else if (id == 'node-uk-canarywharf-1') {
+        clientVirtualIp = '10.8.6.2'; // UK Canary Wharf (Port 12350 -> 198.105.121.200)
+      } else if (id == 'node-pl-warsaw-1') {
+        clientVirtualIp = '10.8.7.2'; // Poland Warsaw (Port 12351 -> 84.247.60.125)
+      } else if (id == 'node-jp-tokyo-1') {
+        clientVirtualIp = '10.8.8.2'; // Japan Tokyo (Port 12352 -> 142.111.67.146)
+      } else if (id == 'node-de-frankfurt-webshare') {
+        clientVirtualIp = '10.8.9.2'; // Germany Frankfurt Proxy (Port 12353 -> 31.58.9.4)
+      } else if (id == 'node-de-frankfurt-oracle') {
+        clientVirtualIp = '10.8.0.2'; // Germany Frankfurt Oracle Direct Gateway
+      } else {
+        // Fallback by country/city
+        final countryCode = serverNode.location.countryCode.toUpperCase();
+        final cityName = serverNode.location.city.toLowerCase();
+        if (countryCode == 'US' && cityName.contains('los angeles')) {
+          clientVirtualIp = '10.8.2.2';
+        } else if (countryCode == 'US' && cityName.contains('seattle')) {
+          clientVirtualIp = '10.8.3.2';
+        } else if (countryCode == 'US') {
+          clientVirtualIp = '10.8.1.2';
+        } else if (countryCode == 'GB' || countryCode == 'UK') {
+          clientVirtualIp = '10.8.4.2';
+        } else if (countryCode == 'PL') {
+          clientVirtualIp = '10.8.7.2';
+        } else if (countryCode == 'JP') {
+          clientVirtualIp = '10.8.8.2';
+        } else if (countryCode == 'DE') {
+          clientVirtualIp = '10.8.0.2';
+        }
       }
 
       _activeProfile = VpnProfile(
